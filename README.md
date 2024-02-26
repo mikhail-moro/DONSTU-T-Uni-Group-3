@@ -1,1 +1,1 @@
-# DonSTU-T-Uni-Group-3-Mikhail-Moro
+# DonSTU_T-Uni_Group3_Mikhail-Moro
