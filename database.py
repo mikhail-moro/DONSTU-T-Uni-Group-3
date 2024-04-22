@@ -51,16 +51,18 @@ class MongoDatabase(AppDatabase):
         password: str = None,
     ):
         if user and password:
-            uri = "mongodb://%s:%s@%s" % (
-                quote_plus(user), quote_plus(password), host
-            )
+            uri = "mongodb://%s:%s@%s" % (quote_plus(user), quote_plus(password), host)
         else:
             uri = 'localhost'
 
         self._client = MongoClient(
             host=uri,
-            port=port,
+            port=port
         )
+
+        if collection in self._client[database].list_collection_names():
+            self._client[database].create_collection(collection)
+
         self._col = self._client[database][collection]
         self._col.create_index('user_id')
 
