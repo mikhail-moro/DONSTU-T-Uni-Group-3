@@ -1,1 +1,3 @@
 credentials/credentials.json
+client/.env
+server/.flaskenv
