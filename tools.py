@@ -39,7 +39,8 @@ MONGO_DATABASE_NAME: EnvVar = None
 MONGO_COLLECTION_NAME: EnvVar = None
 FIREBASE_COLLECTION_NAME: EnvVar = None
 FIREBASE_CREDENTIALS_PATH: EnvVar = None
-
+MONGO_USER: EnvVar = None
+MONGO_PASS: EnvVar = None
 
 _is_env_loaded = False
 
@@ -60,6 +61,8 @@ def load_dotenv(path: str):
     global MONGO_COLLECTION_NAME
     global FIREBASE_COLLECTION_NAME
     global FIREBASE_CREDENTIALS_PATH
+    global MONGO_USER
+    global MONGO_PASS
 
     DATABASE_TYPE = os.environ['DATABASE_TYPE']
     DATABASE_HOST = os.environ['DATABASE_HOST']
@@ -68,3 +71,5 @@ def load_dotenv(path: str):
     MONGO_COLLECTION_NAME = os.environ['MONGO_COLLECTION_NAME']
     FIREBASE_COLLECTION_NAME = os.environ['FIREBASE_COLLECTION_NAME']
     FIREBASE_CREDENTIALS_PATH = os.environ['FIREBASE_CREDENTIALS_PATH']
+    MONGO_USER = os.environ['MONGO_USER']
+    MONGO_PASS = os.environ['MONGO_PASS']

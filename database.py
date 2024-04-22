@@ -7,6 +7,7 @@ import firebase_admin.firestore as fs
 
 from bson import ObjectId
 from pymongo import MongoClient
+from urllib.parse import quote_plus
 from httpx import Client, RequestError
 
 if T.TYPE_CHECKING:
@@ -44,12 +45,21 @@ class MongoDatabase(AppDatabase):
         self,
         database: str,
         collection: str,
-        host: str = 'localhost',
-        port: int = 27017
+        host: str = None,
+        port: int = 27017,
+        user: str = None,
+        password: str = None,
     ):
+        if user and password:
+            uri = "mongodb://%s:%s@%s" % (
+                quote_plus(user), quote_plus(password), host
+            )
+        else:
+            uri = 'localhost'
+
         self._client = MongoClient(
-            host=host,
-            port=port
+            host=uri,
+            port=port,
         )
         self._col = self._client[database][collection]
         self._col.create_index('user_id')
@@ -199,7 +209,9 @@ def Database():
                 database=tools.MONGO_DATABASE_NAME,
                 collection=tools.MONGO_COLLECTION_NAME,
                 host=tools.DATABASE_HOST,
-                port=int(tools.DATABASE_PORT)
+                port=int(tools.DATABASE_PORT),
+                user=tools.MONGO_USER,
+                password=tools.MONGO_PASS
             )
         case "FIREBASE":
             return FireBaseDatabase(
