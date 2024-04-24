@@ -75,13 +75,14 @@ def iter_all_users(
         return {"users": users, 'end_iteration': False}
 
 
-def run():
+def run(dotenv_path: str = None):
     global db, app
 
-    import tools
-    tools.load_dotenv('server/.env')
+    if dotenv_path:
+        import const
+        const.load_dotenv(dotenv_path)
 
-    from ..database import Database
+    from database import Database
     db = Database()
 
     import uvicorn

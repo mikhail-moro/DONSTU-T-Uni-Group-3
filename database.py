@@ -1,9 +1,8 @@
 import os
 import abc
+import dotenv
 
-import typing as T
-import firebase_admin as fba
-import firebase_admin.firestore as fs
+import typing as T  # noqa
 
 from bson import ObjectId
 from pymongo import MongoClient
@@ -11,7 +10,7 @@ from urllib.parse import quote_plus
 from httpx import Client, RequestError
 
 if T.TYPE_CHECKING:
-    from google.cloud.firestore import CollectionReference, Client
+    from google.cloud.firestore import Client
     from pymongo.collection import Collection
 
 
@@ -60,7 +59,7 @@ class MongoDatabase(AppDatabase):
             port=port
         )
 
-        if collection in self._client[database].list_collection_names():
+        if collection not in self._client[database].list_collection_names():
             self._client[database].create_collection(collection)
 
         self._col = self._client[database][collection]
@@ -89,45 +88,6 @@ class MongoDatabase(AppDatabase):
             try:
                 for _ in range(n):
                     batch.append(next(query)['user_id'])
-                yield batch
-            except StopIteration:
-                yield batch; return
-
-
-class FireBaseDatabase(AppDatabase):
-    _col: 'CollectionReference'
-    _client: 'Client'
-
-    def __init__(
-        self,
-        credentials: T.Union[str, os.PathLike, fba.credentials.Certificate],
-        collection_name: str
-    ):
-        if not isinstance(credentials, fba.credentials.Certificate):
-            credentials = fba.credentials.Certificate(credentials)
-
-        app = fba.initialize_app(credential=credentials)
-        self._client = fs.client(app=app)
-        self._col = self._client.collection(collection_name)
-
-    def create_user(self, user_id: str, **init_data: Value) -> None:
-        self._col.document(user_id).set(init_data)
-
-    def get_data_by_id(self, user_id: str) -> dict[str, Value]:
-        data = self._col.document(user_id).get().to_dict()
-        return {} if data is None else data
-
-    def add_data_by_id(self, user_id: str, **update_data: Value) -> None:
-        self._col.document(user_id).set(update_data, merge=True)
-
-    def iter_all_users(self, n: int) -> T.Generator[T.List[str], None, None]:
-        query = self._col.list_documents()
-
-        while True:
-            batch = []
-            try:
-                for _ in range(n):
-                    batch.append(next(query).id)
                 yield batch
             except StopIteration:
                 yield batch
@@ -202,28 +162,72 @@ class WebDatabase(AppDatabase):
     def __del__(self):
         self._client.close()
 
-def Database():
-    import tools
 
-    match tools.DATABASE_TYPE:
+def Database():  # noqa
+    import const
+
+    if not const._is_env_loaded:
+        raise ImportError('Call `const.load_env` or `const.load_vars` before')
+
+    match const.DATABASE_TYPE:
         case "MONGO_DB":
             return MongoDatabase(
-                database=tools.MONGO_DATABASE_NAME,
-                collection=tools.MONGO_COLLECTION_NAME,
-                host=tools.DATABASE_HOST,
-                port=int(tools.DATABASE_PORT),
-                user=tools.MONGO_USER,
-                password=tools.MONGO_PASS
-            )
-        case "FIREBASE":
-            return FireBaseDatabase(
-                credentials=tools.FIREBASE_CREDENTIALS_PATH,
-                collection_name=tools.FIREBASE_COLLECTION_NAME
+                database=const.MONGO_DATABASE_NAME,
+                collection=const.MONGO_COLLECTION_NAME,
+                host=const.DATABASE_HOST,
+                port=int(const.DATABASE_PORT),
+                user=const.MONGO_USER,
+                password=const.MONGO_PASS
             )
         case "WEB_DB":
             return WebDatabase(
-                host=tools.DATABASE_HOST,
-                port=tools.DATABASE_PORT
+                host=const.DATABASE_HOST,
+                port=const.DATABASE_PORT
             )
         case _:
             raise ValueError("Database type not selected")
+
+
+EnvVar = T.Union[str, None]
+
+DATABASE_TYPE: EnvVar = None
+DATABASE_HOST: EnvVar = None
+DATABASE_PORT: EnvVar = None
+MONGO_DATABASE_NAME: EnvVar = None
+MONGO_COLLECTION_NAME: EnvVar = None
+FIREBASE_COLLECTION_NAME: EnvVar = None
+FIREBASE_CREDENTIALS_PATH: EnvVar = None
+MONGO_USER: EnvVar = None
+MONGO_PASS: EnvVar = None
+
+_is_env_loaded = False
+
+
+def load_dotenv(path: str):
+    global _is_env_loaded
+
+    if _is_env_loaded:
+        return
+
+    _is_env_loaded = True
+    dotenv.load_dotenv(path)
+
+    global DATABASE_TYPE
+    global DATABASE_HOST
+    global DATABASE_PORT
+    global MONGO_DATABASE_NAME
+    global MONGO_COLLECTION_NAME
+    global FIREBASE_COLLECTION_NAME
+    global FIREBASE_CREDENTIALS_PATH
+    global MONGO_USER
+    global MONGO_PASS
+
+    DATABASE_TYPE = os.environ['DATABASE_TYPE']
+    DATABASE_HOST = os.environ['DATABASE_HOST']
+    DATABASE_PORT = os.environ['DATABASE_PORT']
+    MONGO_DATABASE_NAME = os.environ['MONGO_DATABASE_NAME']
+    MONGO_COLLECTION_NAME = os.environ['MONGO_COLLECTION_NAME']
+    FIREBASE_COLLECTION_NAME = os.environ['FIREBASE_COLLECTION_NAME']
+    FIREBASE_CREDENTIALS_PATH = os.environ['FIREBASE_CREDENTIALS_PATH']
+    MONGO_USER = os.environ['MONGO_USER']
+    MONGO_PASS = os.environ['MONGO_PASS']

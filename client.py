@@ -1,5 +1,6 @@
 import sys
-import typing as T
+import functools
+import typing as T # noqa
 
 from PySide6.QtCore import Qt, Slot, QModelIndex
 from PySide6.QtGui import QPainter
@@ -20,10 +21,31 @@ from PySide6.QtWidgets import (
     QWidget
 )
 from PySide6.QtCharts import QChartView, QPieSeries, QChart
-from tools import add_on_destroy_callback
+
 
 if T.TYPE_CHECKING:
+    from PySide6.QtWidgets import QWidget
     from database import AppDatabase, Value
+
+    # QWidget or it subclasses
+    QType = T.Union[T.NewType('QSubType', QWidget), QWidget]
+
+
+def add_on_destroy_callback(
+        widget: 'QType',
+        callback: T.Callable[['QType'], None],
+        position: T.Literal['before', 'after'] = 'before'
+) -> 'QType':
+    if position == 'before':
+        def new_destroy(self: 'QType'):
+            callback(self)
+            super(self.__class__, self).destroy()
+    else:
+        def new_destroy(self: 'QType'):
+            super(self.__class__, self).destroy()
+            callback(self)
+    widget.destroy = functools.partial(new_destroy, widget)
+    return widget
 
 
 class Widget(QWidget):
@@ -265,9 +287,11 @@ class MainWindow(QMainWindow):
         exit_action.setShortcut("Ctrl+Q")
 
 
-def run():
-    import tools
-    tools.load_dotenv('client/.env')
+def run(dotenv_path: str = None):
+
+    if dotenv_path:
+        import const
+        const.load_dotenv(dotenv_path)
 
     import database
     db = database.Database()
