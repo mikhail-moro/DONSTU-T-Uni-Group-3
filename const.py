@@ -1,33 +1,6 @@
 import os
 import dotenv
-
-import functools
-import typing as T
-
-
-if T.TYPE_CHECKING:
-    from PySide6.QtWidgets import QWidget
-
-    # QWidget or it subclasses
-    QType = T.Union[T.NewType('QSubType', QWidget), QWidget]
-
-
-def add_on_destroy_callback(
-        widget: 'QType',
-        callback: T.Callable[['QType'], None],
-        position: T.Literal['before', 'after'] = 'before'
-) -> 'QType':
-    if position == 'before':
-        def new_destroy(self: 'QType'):
-            callback(self)
-            super(self.__class__, self).destroy()
-    else:
-        def new_destroy(self: 'QType'):
-            super(self.__class__, self).destroy()
-            callback(self)
-
-    widget.destroy = functools.partial(new_destroy, widget)
-    return widget
+import typing as T # noqa
 
 
 EnvVar = T.Union[str, None]
@@ -73,3 +46,41 @@ def load_dotenv(path: str):
     FIREBASE_CREDENTIALS_PATH = os.environ['FIREBASE_CREDENTIALS_PATH']
     MONGO_USER = os.environ['MONGO_USER']
     MONGO_PASS = os.environ['MONGO_PASS']
+
+
+def load_vars(
+    database_type: EnvVar = None,
+    database_host: EnvVar = None,
+    database_port: EnvVar = None,
+    mongo_database_name: EnvVar = None,
+    mongo_collection_name: EnvVar = None,
+    firebase_collection_name: EnvVar = None,
+    firebase_credentials_name: EnvVar = None,
+    mongo_user: EnvVar = None,
+    mongo_pass: EnvVar = None
+):
+    global _is_env_loaded
+
+    if _is_env_loaded:
+        return
+    _is_env_loaded = True
+
+    global DATABASE_TYPE
+    global DATABASE_HOST
+    global DATABASE_PORT
+    global MONGO_DATABASE_NAME
+    global MONGO_COLLECTION_NAME
+    global FIREBASE_COLLECTION_NAME
+    global FIREBASE_CREDENTIALS_PATH
+    global MONGO_USER
+    global MONGO_PASS
+
+    DATABASE_TYPE = database_type
+    DATABASE_HOST = database_host
+    DATABASE_PORT = database_port
+    MONGO_DATABASE_NAME = mongo_database_name
+    MONGO_COLLECTION_NAME = mongo_collection_name
+    FIREBASE_COLLECTION_NAME = firebase_collection_name
+    FIREBASE_CREDENTIALS_PATH = firebase_credentials_name
+    MONGO_USER = mongo_user
+    MONGO_PASS = mongo_pass
