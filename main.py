@@ -79,7 +79,7 @@ if __name__ == '__main__':
             tmp.write(code)
 
         subprocess.run([
-            r"C:\Users\yahry\AppData\Local\Programs\Python\Python311\Scripts\pyinstaller.exe",
+            r"pyinstaller",
             *CONFIGS[args.build],
             # '--log-level', 'TRACE',
             '--onefile',
