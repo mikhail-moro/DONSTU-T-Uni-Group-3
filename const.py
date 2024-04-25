@@ -7,6 +7,8 @@ EnvVar = T.Union[str, None]
 
 MONGO_USER: EnvVar = None
 MONGO_PASS: EnvVar = None
+SERVER_HOST: EnvVar = None
+SERVER_PORT: EnvVar = None
 DATABASE_TYPE: EnvVar = None
 DATABASE_HOST: EnvVar = None
 DATABASE_PORT: EnvVar = None
@@ -29,6 +31,8 @@ def load_dotenv(path: str):
 
     global MONGO_USER
     global MONGO_PASS
+    global SERVER_HOST
+    global SERVER_PORT
     global DATABASE_TYPE
     global DATABASE_HOST
     global DATABASE_PORT
@@ -39,6 +43,8 @@ def load_dotenv(path: str):
 
     MONGO_USER = os.environ['MONGO_USER']
     MONGO_PASS = os.environ['MONGO_PASS']
+    SERVER_HOST = os.environ['SERVER_HOST']
+    SERVER_PORT = os.environ['SERVER_PORT']
     DATABASE_TYPE = os.environ['DATABASE_TYPE']
     DATABASE_HOST = os.environ['DATABASE_HOST']
     DATABASE_PORT = os.environ['DATABASE_PORT']
@@ -51,6 +57,8 @@ def load_dotenv(path: str):
 def load_vars(
     mongo_user: EnvVar = None,
     mongo_pass: EnvVar = None,
+    server_host: EnvVar = None,
+    server_port: EnvVar = None,
     database_type: EnvVar = None,
     database_host: EnvVar = None,
     database_port: EnvVar = None,
@@ -67,6 +75,8 @@ def load_vars(
 
     global MONGO_USER
     global MONGO_PASS
+    global SERVER_HOST
+    global SERVER_PORT
     global DATABASE_TYPE
     global DATABASE_HOST
     global DATABASE_PORT
@@ -77,6 +87,8 @@ def load_vars(
 
     MONGO_USER = mongo_user
     MONGO_PASS = mongo_pass
+    SERVER_HOST = server_host
+    SERVER_PORT = server_port
     DATABASE_TYPE = database_type
     DATABASE_HOST = database_host
     DATABASE_PORT = database_port
