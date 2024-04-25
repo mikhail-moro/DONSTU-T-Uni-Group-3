@@ -1,10 +1,9 @@
-import json
-import fastapi
 import functools
+import json
 import typing as T  # noqa
 
+import fastapi
 from starlette.responses import Response
-
 
 db: T.Any
 app = fastapi.FastAPI()
@@ -86,7 +85,8 @@ def run(dotenv_path: str = None):
     db = Database()
 
     import uvicorn
-    uvicorn.run(app=app)
+    import const
+    uvicorn.run(app=app, host=const.SERVER_HOST, port=int(const.SERVER_PORT))
 
 
 if __name__ == '__main__':
