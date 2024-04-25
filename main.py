@@ -7,15 +7,15 @@ CONSTANTS_GEN = {
 from const import load_vars
 
 load_vars(
+    mongo_user='{mongo_user}',
+    mongo_pass='{mongo_pass}',
     database_type='{database_type}',
     database_host='{database_host}',
     database_port='{database_port}',
     mongo_database_name='{mongo_database_name}',
     mongo_collection_name='{mongo_collection_name}',
     firebase_collection_name='{firebase_collection_name}',
-    firebase_credentials_name='{firebase_credentials_name}',
-    mongo_user='{mongo_user}',
-    mongo_pass='{mongo_pass}'
+    firebase_credentials_name='{firebase_credentials_name}'
 )
 """
 }

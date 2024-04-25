@@ -5,6 +5,8 @@ import typing as T # noqa
 
 EnvVar = T.Union[str, None]
 
+MONGO_USER: EnvVar = None
+MONGO_PASS: EnvVar = None
 DATABASE_TYPE: EnvVar = None
 DATABASE_HOST: EnvVar = None
 DATABASE_PORT: EnvVar = None
@@ -12,8 +14,6 @@ MONGO_DATABASE_NAME: EnvVar = None
 MONGO_COLLECTION_NAME: EnvVar = None
 FIREBASE_COLLECTION_NAME: EnvVar = None
 FIREBASE_CREDENTIALS_PATH: EnvVar = None
-MONGO_USER: EnvVar = None
-MONGO_PASS: EnvVar = None
 
 _is_env_loaded = False
 
@@ -27,6 +27,8 @@ def load_dotenv(path: str):
     _is_env_loaded = True
     dotenv.load_dotenv(path)
 
+    global MONGO_USER
+    global MONGO_PASS
     global DATABASE_TYPE
     global DATABASE_HOST
     global DATABASE_PORT
@@ -34,9 +36,9 @@ def load_dotenv(path: str):
     global MONGO_COLLECTION_NAME
     global FIREBASE_COLLECTION_NAME
     global FIREBASE_CREDENTIALS_PATH
-    global MONGO_USER
-    global MONGO_PASS
 
+    MONGO_USER = os.environ['MONGO_USER']
+    MONGO_PASS = os.environ['MONGO_PASS']
     DATABASE_TYPE = os.environ['DATABASE_TYPE']
     DATABASE_HOST = os.environ['DATABASE_HOST']
     DATABASE_PORT = os.environ['DATABASE_PORT']
@@ -44,20 +46,18 @@ def load_dotenv(path: str):
     MONGO_COLLECTION_NAME = os.environ['MONGO_COLLECTION_NAME']
     FIREBASE_COLLECTION_NAME = os.environ['FIREBASE_COLLECTION_NAME']
     FIREBASE_CREDENTIALS_PATH = os.environ['FIREBASE_CREDENTIALS_PATH']
-    MONGO_USER = os.environ['MONGO_USER']
-    MONGO_PASS = os.environ['MONGO_PASS']
 
 
 def load_vars(
+    mongo_user: EnvVar = None,
+    mongo_pass: EnvVar = None,
     database_type: EnvVar = None,
     database_host: EnvVar = None,
     database_port: EnvVar = None,
     mongo_database_name: EnvVar = None,
     mongo_collection_name: EnvVar = None,
     firebase_collection_name: EnvVar = None,
-    firebase_credentials_name: EnvVar = None,
-    mongo_user: EnvVar = None,
-    mongo_pass: EnvVar = None
+    firebase_credentials_name: EnvVar = None
 ):
     global _is_env_loaded
 
@@ -65,6 +65,8 @@ def load_vars(
         return
     _is_env_loaded = True
 
+    global MONGO_USER
+    global MONGO_PASS
     global DATABASE_TYPE
     global DATABASE_HOST
     global DATABASE_PORT
@@ -72,9 +74,9 @@ def load_vars(
     global MONGO_COLLECTION_NAME
     global FIREBASE_COLLECTION_NAME
     global FIREBASE_CREDENTIALS_PATH
-    global MONGO_USER
-    global MONGO_PASS
 
+    MONGO_USER = mongo_user
+    MONGO_PASS = mongo_pass
     DATABASE_TYPE = database_type
     DATABASE_HOST = database_host
     DATABASE_PORT = database_port
@@ -82,5 +84,3 @@ def load_vars(
     MONGO_COLLECTION_NAME = mongo_collection_name
     FIREBASE_COLLECTION_NAME = firebase_collection_name
     FIREBASE_CREDENTIALS_PATH = firebase_credentials_name
-    MONGO_USER = mongo_user
-    MONGO_PASS = mongo_pass
