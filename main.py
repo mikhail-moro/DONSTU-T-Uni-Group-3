@@ -10,10 +10,10 @@ load_vars(
     mongo_user='{mongo_user}',
     mongo_pass='{mongo_pass}',
     server_host='{server_host}',
-    server_port={server_port},
+    server_port='{server_port}',
     database_type='{database_type}',
     database_host='{database_host}',
-    database_port={database_port},
+    database_port='{database_port}',
     mongo_database_name='{mongo_database_name}',
     mongo_collection_name='{mongo_collection_name}',
     firebase_collection_name='{firebase_collection_name}',
@@ -67,10 +67,10 @@ if __name__ == '__main__':
             dotenv.load_dotenv('.env')
 
             code = CONSTANTS_GEN[args.build].format(
-                mongo_user = safe_env('MONGO_USER', 'None'),
-                mongo_pass = safe_env('MONGO_PASS', 'None'),
+                mongo_user=safe_env('MONGO_USER', 'None'),
+                mongo_pass=safe_env('MONGO_PASS', 'None'),
                 server_host=safe_env('SERVER_HOST', 'None'),
-                server_port=safe_env('SERVER_HOST', 'None'),
+                server_port=safe_env('SERVER_PORT', 'None'),
                 database_type=safe_env('DATABASE_TYPE', 'None'),
                 database_host=safe_env('DATABASE_HOST', 'None'),
                 database_port=safe_env('DATABASE_PORT', 'None'),
@@ -83,7 +83,7 @@ if __name__ == '__main__':
             tmp.write(code)
 
         subprocess.run([
-            r"pyinstaller",
+            'pyinstaller',
             *CONFIGS[args.build],
             # '--log-level', 'TRACE',
             '--onefile',

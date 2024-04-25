@@ -76,16 +76,15 @@ def iter_all_users(
 
 def run(dotenv_path: str = None):
     global db, app
+    import const
 
     if dotenv_path:
-        import const
         const.load_dotenv(dotenv_path)
 
     from database import Database
     db = Database()
 
     import uvicorn
-    import const
     uvicorn.run(app=app, host=const.SERVER_HOST, port=int(const.SERVER_PORT))
 
 
