@@ -12,3 +12,5 @@ Kivymd
 matplotlib
 starlette
 uvicorn
+pydantic
+regex

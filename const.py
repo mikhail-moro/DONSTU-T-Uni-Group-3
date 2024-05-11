@@ -4,7 +4,6 @@ import typing as T # noqa
 
 
 EnvVar = T.Union[str, None]
-
 MONGO_USER: EnvVar = None
 MONGO_PASS: EnvVar = None
 SERVER_HOST: EnvVar = None
